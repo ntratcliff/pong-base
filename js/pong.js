@@ -57,6 +57,7 @@ Field.prototype.draw = function(ctx) {
 
 // how long (in ms) between updates
 var fixedDelta = 16; // roughly 60 fps
+var deltaTime = fixedDelta / 1000;
 var interval;
 
 var canvas;
@@ -83,13 +84,16 @@ function preinit() {
 
 function init() {
     // create field
-    field = new Field(0, 0, canvas.scrollWidth, canvas.scrollHeight);
+    field = new Field(0, 0, canvas.width, canvas.height);
     
     // create ball in center of field
     ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 5, 5, 20);
 }
     
 function update() {
+    // clear canvas for drawing
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     // update field
     field.update();
     
