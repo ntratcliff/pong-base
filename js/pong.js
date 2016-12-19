@@ -57,7 +57,7 @@ Ball.prototype.update = function() {
 
 Ball.prototype.draw = function(ctx) {
     // draw circle
-    ctx.fillStyle = "black";
+    ctx.fillStyle = fillColor;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     ctx.fill();
@@ -77,11 +77,14 @@ Field.prototype.constructor = Field;
 // Field functions
 Field.prototype.draw = function(ctx) {
     // draw the field
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = strokeColor;
     ctx.strokeRect(this.x, this.y, this.width, this.height);
 }
 
 // Global
+
+var fillColor = "white";
+var strokeColor = "white";
 
 // how long (in ms) between updates
 var fixedDelta = 16; // roughly 60 fps
@@ -112,7 +115,7 @@ function preinit() {
 
 function init() {
     // create field
-    field = new Field(0, 0, canvas.width, canvas.height);
+    field = new Field(0, 100, canvas.width, canvas.height - 100);
     
     // create ball in center of field
     ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
