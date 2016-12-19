@@ -14,12 +14,13 @@ GameObject.prototype.update = function() { }
 GameObject.prototype.draw = function(ctx) { }
 
 // Ball constructor
-var Ball = function(x, y, vx, vy, r) {
+var Ball = function(x, y, vx, vy, r, field) {
     // call parent constructor
     GameObject.call(this, x, y);
     this.radius = r;
     this.vx = vx;
     this.vy = vy;
+    this.field = field;
 }
 
 // set Ball parent
@@ -27,6 +28,33 @@ Ball.prototype = Object.create(GameObject.prototype);
 Ball.prototype.constructor = Ball;
 
 // Ball functions
+Ball.prototype.update = function() {
+    this.x += this.vx * deltaTime;
+    this.y += this.vy * deltaTime;
+    
+    // if there is a field and this ball knows about it
+    if(this.field) {
+        // check collisions
+        if (this.x + this.radius > field.x + field.width) {
+            // off right screen
+            this.vx = -this.vx;
+        }
+        else if (this.x - this.radius < field.x) {
+            // off left screen
+            this.vx = -this.vx;
+        }
+        
+        if (this.y + this.radius > field.y + field.height) {
+            // off bottom screen
+            this.vy = -this.vy;
+        }
+        else if (this.y - this.radius < field.y) {
+            // off top screen
+            this.vy = -this.vy;
+        }
+    }
+}
+
 Ball.prototype.draw = function(ctx) {
     // draw circle
     ctx.fillStyle = "black";
@@ -87,7 +115,7 @@ function init() {
     field = new Field(0, 0, canvas.width, canvas.height);
     
     // create ball in center of field
-    ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 5, 5, 20);
+    ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
 }
     
 function update() {
