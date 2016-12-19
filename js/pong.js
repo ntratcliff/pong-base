@@ -34,16 +34,6 @@ Ball.prototype.update = function() {
     
     // if there is a field and this ball knows about it
     if(this.field) {
-        // check collisions
-        if (this.x + this.radius > field.x + field.width) {
-            // off right screen
-            this.vx = -this.vx;
-        }
-        else if (this.x - this.radius < field.x) {
-            // off left screen
-            this.vx = -this.vx;
-        }
-        
         if (this.y + this.radius > field.y + field.height) {
             // off bottom screen
             this.vy = -this.vy;
@@ -81,10 +71,31 @@ Field.prototype.draw = function(ctx) {
     ctx.strokeRect(this.x, this.y, this.width, this.height);
 }
 
+// Score contstructor
+var Score = function(x, y, textAlign) {
+    GameObject.call(this, x, y);
+    this.score = 0;
+    this.textAlign = textAlign;
+}
+
+// set Score parent
+Score.prototype = Object.create(GameObject.prototype);
+Score.prototype.constructor = Score;
+
+// Score functions
+Score.prototype.draw = function(ctx) {
+    ctx.fillStyle = fillColor;
+    ctx.font = font;
+    ctx.textBaseline = "top";
+    ctx.textAlign = this.textAlign;
+    ctx.fillText(String(this.score), this.x, this.y);
+}
+
 // Global
 
 var fillColor = "white";
 var strokeColor = "white";
+var font = "60px sans-serif";
 
 // how long (in ms) between updates
 var fixedDelta = 16; // roughly 60 fps
@@ -95,6 +106,7 @@ var canvas;
 var ctx; 
 
 var field, ball;
+var p1Score, p2Score;
 
 function preinit() {
     // get canvas
@@ -119,25 +131,44 @@ function init() {
     
     // create ball in center of field
     ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
+    
+    // create scores
+    p1Score = new Score(canvas.width / 2 - 30, 10, "right");
+    p2Score = new Score(canvas.width / 2 + 30, 10, "left");
 }
     
 function update() {
-    // clear canvas for drawing
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
     // update field
     field.update();
     
     // update ball
     ball.update();
+    
+    // check if ball needs to be scored
+    if(ball.x - ball.radius > field.x + field.width){
+        // ball is off right screen
+        p1Score.score++;
+        ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
+    }
+    else if(ball.x + ball.radius < field.x){
+        p2Score.score++;
+        ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
+    }
 }
     
 function draw(ctx) {
+    // clear canvas for drawing
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     // draw field
     field.draw(ctx);
     
     // draw ball
     ball.draw(ctx);
+    
+    // draw scores
+    p1Score.draw(ctx);
+    p2Score.draw(ctx);
 }
 
 window.onload = preinit;
