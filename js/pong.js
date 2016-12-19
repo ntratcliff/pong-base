@@ -53,6 +53,58 @@ Ball.prototype.draw = function(ctx) {
     ctx.fill();
 }
 
+// Paddle constructor
+var Paddle = function (x, y, w, h, s, upKey, downKey) {
+    GameObject.call(this, x, y);
+    this.width = w;
+    this.height = h;
+    this.speed = s;
+    this.upKey = upKey;
+    this.downKey = downKey;
+    this.vy = 0;
+}
+
+// set Paddle parent
+Paddle.prototype = Object.create(GameObject.prototype);
+Paddle.prototype.constructor = Paddle;
+
+// Paddle Functions
+// callback for keypress
+Paddle.prototype.keydown = function(e) {
+    console.log(e.key);
+    console.log(this.upKey);
+    console.log(e.key == this.upKey);
+    if(e.key === this.upKey) {
+        // move up
+        this.vy = -this.speed;
+    }
+    else if(e.key === this.downKey) {
+        // move down
+        this.vy = this.speed;
+    }
+}
+
+// callback for key release
+Paddle.prototype.keyup = function(e) {
+    if(e.key === this.upKey 
+      || e.key === this.downKey) {
+        // move up
+        this.vy = 0;
+    }
+}
+
+// update
+Paddle.prototype.update = function() {
+    // add velocity to position
+    this.y += this.vy * deltaTime;
+}
+
+// draw
+Paddle.prototype.draw = function(ctx) {
+    ctx.fillStyle = fillColor;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+}
+
 // Field constructor
 var Field = function (x, y, w, h) {
     GameObject.call(this, x, y);
@@ -107,6 +159,7 @@ var ctx;
 
 var field, ball;
 var p1Score, p2Score;
+var p1Paddle, p2Paddle;
 
 function preinit() {
     // get canvas
@@ -132,6 +185,18 @@ function init() {
     // create ball in center of field
     ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
     
+    // create paddles
+    p1Paddle = new Paddle(field.x + 30, field.y + field.height / 2 - 50, 15, 100, 100, "w", "s");
+    p2Paddle = new Paddle(field.width - 45, field.y + field.height / 2 - 50, 15, 100, 100, "ArrowUp", "ArrowDown");
+    
+    // register paddle event listeners
+    document.addEventListener("keydown", function(e) {p1Paddle.keydown(e);});
+    document.addEventListener("keyup", function(e){p1Paddle.keyup(e);});
+    
+    document.addEventListener("keydown", function(e) {p2Paddle.keydown(e);});
+    document.addEventListener("keyup", function(e){p2Paddle.keyup(e);});
+    
+    
     // create scores
     p1Score = new Score(canvas.width / 2 - 30, 10, "right");
     p2Score = new Score(canvas.width / 2 + 30, 10, "left");
@@ -140,6 +205,10 @@ function init() {
 function update() {
     // update field
     field.update();
+    
+    // update paddles
+    p1Paddle.update();
+    p2Paddle.update();
     
     // update ball
     ball.update();
@@ -162,6 +231,10 @@ function draw(ctx) {
     
     // draw field
     field.draw(ctx);
+    
+    // draw paddles
+    p1Paddle.draw(ctx);
+    p2Paddle.draw(ctx);
     
     // draw ball
     ball.draw(ctx);
