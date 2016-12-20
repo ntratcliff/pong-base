@@ -201,6 +201,10 @@ var fillColor = "white";
 var strokeColor = "white";
 var font = "60px sans-serif";
 
+var paddleSpeed = 150;
+var ballVX = 100;
+var ballVY = 100;
+
 // how long (in ms) between updates
 var fixedDelta = 16; // roughly 60 fps
 var deltaTime = fixedDelta / 1000;
@@ -234,11 +238,11 @@ function init() {
     field = new Field(0, 100, canvas.width, canvas.height - 100);
     
     // create ball in center of field
-    ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
+    ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, ballVX, ballVY, 20, field);
     
     // create paddles
-    var p1Paddle = new Paddle(field.x + 30, field.y + field.height / 2 - 50, 15, 100, 100, "w", "s");
-    var p2Paddle = new Paddle(field.width - 45, field.y + field.height / 2 - 50, 15, 100, 100, "ArrowUp", "ArrowDown");
+    var p1Paddle = new Paddle(field.x + 30, field.y + field.height / 2 - 50, 15, 100, paddleSpeed, "w", "s");
+    var p2Paddle = new Paddle(field.width - 45, field.y + field.height / 2 - 50, 15, 100, paddleSpeed, "ArrowUp", "ArrowDown");
     
     // create scores
     var p1Score = new Score(canvas.width / 2 - 30, 10, "right");
