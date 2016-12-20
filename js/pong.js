@@ -62,6 +62,10 @@ var Paddle = function (x, y, w, h, s, upKey, downKey) {
     this.upKey = upKey;
     this.downKey = downKey;
     this.vy = 0;
+    
+    // register paddle event listeners
+    document.addEventListener("keydown", this.keydown.bind(this));
+    document.addEventListener("keyup", this.keyup.bind(this));
 }
 
 // set Paddle parent
@@ -238,15 +242,6 @@ function init() {
     // create paddles
     var p1Paddle = new Paddle(field.x + 30, field.y + field.height / 2 - 50, 15, 100, 100, "w", "s");
     var p2Paddle = new Paddle(field.width - 45, field.y + field.height / 2 - 50, 15, 100, 100, "ArrowUp", "ArrowDown");
-    
-    // register paddle event listeners
-    // TODO: there's probably something better we can do than just anon functions
-    document.addEventListener("keydown", function(e) {p1Paddle.keydown(e);});
-    document.addEventListener("keyup", function(e){p1Paddle.keyup(e);});
-    
-    document.addEventListener("keydown", function(e) {p2Paddle.keydown(e);});
-    document.addEventListener("keyup", function(e){p2Paddle.keyup(e);});
-    
     
     // create scores
     var p1Score = new Score(canvas.width / 2 - 30, 10, "right");
