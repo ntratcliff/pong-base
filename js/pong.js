@@ -120,6 +120,14 @@ Paddle.prototype.update = function() {
     // add velocity to position
     this.y += this.vy * deltaTime;
     
+    // clamp paddle y to field bounds
+    if(this.y < field.y){
+        this.y = field.y;
+    }
+    else if(this.y + this.height > field.y + field.height) {
+        this.y = field.y + field.height - this.height;
+    }
+    
     // check collision between this and ball
     if(ball && this.checkCollision(ball)) {
         // position ball so that it is no longer colliding with paddle
