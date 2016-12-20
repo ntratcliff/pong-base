@@ -141,24 +141,6 @@ Paddle.prototype.draw = function(ctx) {
     ctx.fillRect(this.x, this.y, this.width, this.height);
 }
 
-// Field constructor
-var Field = function (x, y, w, h) {
-    GameObject.call(this, x, y);
-    this.width = w;
-    this.height = h;
-}
-
-// set Field parent
-Field.prototype = Object.create(GameObject.prototype);
-Field.prototype.constructor = Field;
-
-// Field functions
-Field.prototype.draw = function(ctx) {
-    // draw the field
-    ctx.strokeStyle = strokeColor;
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
-}
-
 // Score contstructor
 var Score = function(x, y, textAlign) {
     GameObject.call(this, x, y);
@@ -179,6 +161,39 @@ Score.prototype.draw = function(ctx) {
     ctx.fillText(String(this.score), this.x, this.y);
 }
 
+// Player constructor
+var Player = function(paddle, score) {
+    this.paddle = paddle;
+    this.score = score;
+}
+
+Player.prototype.update = function() {
+    this.paddle.update();
+}
+
+Player.prototype.draw = function(ctx) {
+    this.paddle.draw(ctx);
+    this.score.draw(ctx);
+}
+
+// Field constructor
+var Field = function (x, y, w, h) {
+    GameObject.call(this, x, y);
+    this.width = w;
+    this.height = h;
+}
+
+// set Field parent
+Field.prototype = Object.create(GameObject.prototype);
+Field.prototype.constructor = Field;
+
+// Field functions
+Field.prototype.draw = function(ctx) {
+    // draw the field
+    ctx.strokeStyle = strokeColor;
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
+}
+
 // Global
 
 var fillColor = "white";
@@ -194,8 +209,7 @@ var canvas;
 var ctx; 
 
 var field, ball;
-var p1Score, p2Score;
-var p1Paddle, p2Paddle;
+var player1, player2;
 
 function preinit() {
     // get canvas
@@ -222,8 +236,8 @@ function init() {
     ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
     
     // create paddles
-    p1Paddle = new Paddle(field.x + 30, field.y + field.height / 2 - 50, 15, 100, 100, "w", "s");
-    p2Paddle = new Paddle(field.width - 45, field.y + field.height / 2 - 50, 15, 100, 100, "ArrowUp", "ArrowDown");
+    var p1Paddle = new Paddle(field.x + 30, field.y + field.height / 2 - 50, 15, 100, 100, "w", "s");
+    var p2Paddle = new Paddle(field.width - 45, field.y + field.height / 2 - 50, 15, 100, 100, "ArrowUp", "ArrowDown");
     
     // register paddle event listeners
     // TODO: there's probably something better we can do than just anon functions
@@ -235,17 +249,21 @@ function init() {
     
     
     // create scores
-    p1Score = new Score(canvas.width / 2 - 30, 10, "right");
-    p2Score = new Score(canvas.width / 2 + 30, 10, "left");
+    var p1Score = new Score(canvas.width / 2 - 30, 10, "right");
+    var p2Score = new Score(canvas.width / 2 + 30, 10, "left");
+    
+    // create players
+    player1 = new Player(p1Paddle, p1Score);
+    player2 = new Player(p2Paddle, p2Score);
 }
     
 function update() {
     // update field
     field.update();
     
-    // update paddles
-    p1Paddle.update();
-    p2Paddle.update();
+    // update players
+    player1.update();
+    player2.update();
     
     // update ball
     ball.update();
@@ -253,11 +271,11 @@ function update() {
     // check if ball needs to be scored
     if(ball.x - ball.radius > field.x + field.width){
         // ball is off right screen
-        p1Score.score++;
+        player1.score.score++;
         ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
     }
     else if(ball.x + ball.radius < field.x){
-        p2Score.score++;
+        player2.score.score++;
         ball = new Ball(field.x + field.width / 2, field.y + field.height / 2, 60, 50, 20, field);
     }
 }
@@ -270,15 +288,11 @@ function draw(ctx) {
     field.draw(ctx);
     
     // draw paddles
-    p1Paddle.draw(ctx);
-    p2Paddle.draw(ctx);
+    player1.draw(ctx);
+    player2.draw(ctx);
     
     // draw ball
     ball.draw(ctx);
-    
-    // draw scores
-    p1Score.draw(ctx);
-    p2Score.draw(ctx);
 }
 
 window.onload = preinit;
