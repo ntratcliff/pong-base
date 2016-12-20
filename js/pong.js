@@ -75,9 +75,6 @@ Paddle.prototype.constructor = Paddle;
 // Paddle Functions
 // callback for keypress
 Paddle.prototype.keydown = function(e) {
-    console.log(e.key);
-    console.log(this.upKey);
-    console.log(e.key == this.upKey);
     if(e.key === this.upKey) {
         // move up
         this.vy = -this.speed;
