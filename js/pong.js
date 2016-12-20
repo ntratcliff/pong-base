@@ -93,10 +93,46 @@ Paddle.prototype.keyup = function(e) {
     }
 }
 
+// check collision between paddle and ball
+Paddle.prototype.checkCollision = function(ball) {
+    var distX = Math.abs(ball.x - this.x - this.width / 2);
+    var distY = Math.abs(ball.y - this.y - this.height / 2);
+    
+    if (distX > (this.width / 2 + ball.radius) ||
+       distY > (this.height / 2 + ball.radius)) {
+        return false;
+    }
+    
+    if(distX <= (this.width / 2) ||
+      distY <= (this.height / 2)) {
+        return true;
+    }
+    
+    var distSq = (distX - this.width / 2)^2 +
+        (distY - this.height / 2)^2;
+    
+    return distSq <= (ball.radius^2);
+}
+
 // update
 Paddle.prototype.update = function() {
     // add velocity to position
     this.y += this.vy * deltaTime;
+    
+    // check collision between this and ball
+    if(ball && this.checkCollision(ball)) {
+        // position ball so that it is no longer colliding with paddle
+        if(ball.x < this.x) {
+            // ball is to the left of the paddle
+            ball.x = this.x - ball.radius;
+        }
+        else {
+            // ball is to the right of the paddle
+            ball.x = this.x + this.width + ball.radius;
+        }
+        
+        ball.vx = -ball.vx;
+    }
 }
 
 // draw
@@ -190,6 +226,7 @@ function init() {
     p2Paddle = new Paddle(field.width - 45, field.y + field.height / 2 - 50, 15, 100, 100, "ArrowUp", "ArrowDown");
     
     // register paddle event listeners
+    // TODO: there's probably something better we can do than just anon functions
     document.addEventListener("keydown", function(e) {p1Paddle.keydown(e);});
     document.addEventListener("keyup", function(e){p1Paddle.keyup(e);});
     
